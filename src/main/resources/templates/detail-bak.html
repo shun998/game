@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>详情页</title>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/echarts.min.js"></script>
+    <style>
+        table{
+            border-collapse: collapse;
+            margin: 100px auto;
+        }
+        td{
+            width: 160px;
+            height: 20px;
+            border: 1px solid #ddd;
+            padding: 6px 8px;
+        }
+        .a1{
+            background: #878787;
+            color: #fff;
+            font-weight: bolder;
+        }
+        tr:hover{
+            background:#71c671;
+            color:#404040;
+            font-weight: bolder;
+        }
+        td{
+            text-align: center;
+        }
+        select{
+            width: 200px;
+            height: 30px;
+        }
+    </style>
+</head>
+<body>
+<div>
+类型：
+<select id="type">
+    <option>请选择</option>
+</select>
+序号：
+<select id="num">
+    <option></option>
+</select>
+</div>
+<div>
+    <table border="1">
+        <div>
+            <tr class="a1">
+                <td>名称</td>
+                <td></td>
+                <td>不动产数量</td>
+                <td></td>
+                <td>公积金总额</td>
+                <td></td>
+                <td>公积金平均数</td>
+                <td></td>
+            </tr>
+        </div>
+        <tr>
+            <td>公积金为空/0的数量</td>
+            <td></td>
+            <td>公积金变化趋势</td>
+            <td></td>
+            <td>社保总额</td>
+            <td></td>
+            <td>社保平均值</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>社保为空/0的数量</td>
+            <td></td>
+            <td>社保变化趋势</td>
+            <td></td>
+            <td>医保总额</td>
+            <td></td>
+            <td>医保平均值</td>
+            <td></td>
+
+        </tr>
+        <tr>
+            <td>医保为空/0的数量</td>
+            <td></td>
+            <td>医保变化趋势</td>
+            <td></td>
+            <td>公积金为空/0数量对应分数</td>
+            <td></td>
+            <td>公积金变化趋势对应分数</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>社保为空/0数量对应分数</td>
+            <td></td>
+            <td>社保变化趋势对应分数</td>
+            <td></td>
+            <td>医保为空/0数量对应分数</td>
+            <td></td>
+            <td>医保变化趋势对应分数</td>
+            <td></td>
+
+        </tr>
+        <tr>
+            <td>公积金总额对应分数</td>
+            <td></td>
+            <td>公积金平均值对应分数</td>
+            <td></td>
+            <td>社保总额对应分数</td>
+            <td></td>
+            <td>社保平均值对应分数</td>
+            <td></td>
+
+        </tr>
+        <tr>
+            <td>不动产数量对应分数</td>
+            <td></td>
+            <td>还款意愿分数</td>
+            <td></td>
+            <td>还款能力分数</td>
+            <td></td>
+            <td>还款意愿能力总分数</td>
+            <td></td>
+
+        </tr>
+        <tr>
+            <td>违约率</td>
+            <td></td>
+            <td>信用分数</td>
+            <td></td>
+            <td>信用等级</td>
+            <td></td>
+            <td>授信率</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>信用额度</td>
+            <td></td>
+            <td>抵押贷额度</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+    </table>
+</div>
+<div id="map1" style="width: 1200px;height:650px;"></div>
+<div id="map2" style="width: 1200px;height:650px;"></div>
+<!--<div id="map3" style="width: 1200px;height:650px;"></div>-->
+<!--<div id="map4" style="width: 1200px;height:650px;"></div>-->
+<!--<div id="map5" style="width: 1200px;height:650px;"></div>-->
+<script type="text/javascript">
+    // 基于准备好的dom，初始化echarts实例
+    var myChart = echarts.init(document.getElementById('map1'));
+
+    // 指定图表的配置项和数据
+    myChart.setOption({
+        title: {
+            text: '信贷利率'
+        },
+        tooltip: {},
+        legend: {
+            data:['信贷利率']
+        },
+        xAxis: {
+            data: []
+        },
+        yAxis: {},
+        series: [{
+            name: '信贷利率',
+            type: 'bar',
+            data: []
+        }]
+    });
+
+    myChart.showLoading();
+
+    var names=[];    //类别数组（实际用来盛放X轴坐标值）
+    var nums=[];    //销量数组（实际用来盛放Y坐标值）
+
+    $.ajax({
+        type : "get",
+        async : false,            //异步请求（同步请求将会锁住浏览器，用户其他操作必须等待请求完成才可以执行）
+        url : "getQiyeByNum/0",    //请求发送到TestServlet处
+        data : {},
+        dataType : "json",        //返回数据形式为json
+        success : function(result) {
+            //请求成功时执行该函数内容，result即为服务器返回的json对象
+            var data = result.data;
+            if (data) {
+                for(var i=0;i<data.xd.length;i++){
+                    names.push(i);    //挨个取出类别并填入类别数组
+                }
+                nums=data.xd;
+                myChart.hideLoading();    //隐藏加载动画
+                myChart.setOption({        //加载数据图表
+                    xAxis: {
+                        data: names
+                    },
+                    series: [{
+                        // 根据名字对应到相应的系列
+                        name: '信贷利率',
+                        data: nums
+                    }]
+                });
+
+            }
+
+        },
+        error : function() {
+            //请求失败时执行该函数
+            alert("图表请求数据失败!");
+            myChart.hideLoading();
+        }
+    })
+</script>
+<script type="text/javascript">
+    // 基于准备好的dom，初始化echarts实例
+    var myChart = echarts.init(document.getElementById('map2'));
+
+    // 指定图表的配置项和数据
+    myChart.setOption({
+        title: {
+            text: '抵押贷利率'
+        },
+        tooltip: {},
+        legend: {
+            data:['抵押贷利率']
+        },
+        xAxis: {
+            data: []
+        },
+        yAxis: {},
+        series: [{
+            name: '抵押贷利率',
+            type: 'bar',
+            itemStyle:{
+                normal:{
+                    color:"red",
+                    lineStyle:{color:'red'}
+                }
+            },
+            data: []
+        }]
+    });
+
+    myChart.showLoading();
+
+    var names=[];    //类别数组（实际用来盛放X轴坐标值）
+    var nums=[];    //销量数组（实际用来盛放Y坐标值）
+
+    $.ajax({
+        type : "get",
+        async : false,            //异步请求（同步请求将会锁住浏览器，用户其他操作必须等待请求完成才可以执行）
+        url : "getQiyeByNum/0",    //请求发送到TestServlet处
+        data : {},
+        dataType : "json",        //返回数据形式为json
+        success : function(result) {
+            //请求成功时执行该函数内容，result即为服务器返回的json对象
+            var data = result.data;
+            if (data) {
+                for(var i=0;i<data.dyd.length;i++){
+                    names.push(i);    //挨个取出类别并填入类别数组
+                }
+                nums=data.dyd;
+                myChart.hideLoading();    //隐藏加载动画
+                myChart.setOption({        //加载数据图表
+                    xAxis: {
+                        data: names
+                    },
+                    series: [{
+                        // 根据名字对应到相应的系列
+                        name: '抵押贷利率',
+                        data: nums
+                    }]
+                });
+
+            }
+
+        },
+        error : function() {
+            //请求失败时执行该函数
+            alert("图表请求数据失败!");
+            myChart.hideLoading();
+        }
+    })
+</script>
+<!--<script type="text/javascript">-->
+<!--    // 基于准备好的dom，初始化echarts实例-->
+<!--    var myChart = echarts.init(document.getElementById('map3'));-->
+
+<!--    // 指定图表的配置项和数据-->
+<!--    myChart.setOption({-->
+<!--        title: {-->
+<!--            text: '医保缴纳'-->
+<!--        },-->
+<!--        tooltip: {},-->
+<!--        legend: {-->
+<!--            data:['医保缴纳']-->
+<!--        },-->
+<!--        xAxis: {-->
+<!--            data: []-->
+<!--        },-->
+<!--        yAxis: {},-->
+<!--        series: [{-->
+<!--            name: '医保缴纳',-->
+<!--            type: 'bar',-->
+<!--            itemStyle:{-->
+<!--                normal:{-->
+<!--                    color:"red",-->
+<!--                    lineStyle:{color:'red'}-->
+<!--                }-->
+<!--            },-->
+<!--            data: []-->
+<!--        }]-->
+<!--    });-->
+
+<!--    myChart.showLoading();-->
+
+<!--    var names=[];    //类别数组（实际用来盛放X轴坐标值）-->
+<!--    var nums=[];    //销量数组（实际用来盛放Y坐标值）-->
+
+<!--    $.ajax({-->
+<!--        type : "get",-->
+<!--        async : false,            //异步请求（同步请求将会锁住浏览器，用户其他操作必须等待请求完成才可以执行）-->
+<!--        url : "getQiyeByNum/0",    //请求发送到TestServlet处-->
+<!--        data : {},-->
+<!--        dataType : "json",        //返回数据形式为json-->
+<!--        success : function(result) {-->
+<!--            //请求成功时执行该函数内容，result即为服务器返回的json对象-->
+<!--            var data = result.data;-->
+<!--            if (data) {-->
+<!--                for(var i=0;i<data.yb.length;i++){-->
+<!--                    names.push(i);    //挨个取出类别并填入类别数组-->
+<!--                }-->
+<!--                nums=data.yb;-->
+<!--                myChart.hideLoading();    //隐藏加载动画-->
+<!--                myChart.setOption({        //加载数据图表-->
+<!--                    xAxis: {-->
+<!--                        data: names-->
+<!--                    },-->
+<!--                    series: [{-->
+<!--                        // 根据名字对应到相应的系列-->
+<!--                        name: '医保缴纳',-->
+<!--                        data: nums-->
+<!--                    }]-->
+<!--                });-->
+
+<!--            }-->
+
+<!--        },-->
+<!--        error : function() {-->
+<!--            //请求失败时执行该函数-->
+<!--            alert("图表请求数据失败!");-->
+<!--            myChart.hideLoading();-->
+<!--        }-->
+<!--    })-->
+<!--</script>-->
+<!--<script type="text/javascript">-->
+<!--    // 基于准备好的dom，初始化echarts实例-->
+<!--    var myChart = echarts.init(document.getElementById('map4'));-->
+
+<!--    // 指定图表的配置项和数据-->
+<!--    myChart.setOption({-->
+<!--        title: {-->
+<!--            text: '社保缴纳'-->
+<!--        },-->
+<!--        tooltip: {},-->
+<!--        legend: {-->
+<!--            data:['社保缴纳']-->
+<!--        },-->
+<!--        xAxis: {-->
+<!--            data: []-->
+<!--        },-->
+<!--        yAxis: {},-->
+<!--        series: [{-->
+<!--            name: '社保缴纳',-->
+<!--            type: 'bar',-->
+<!--            itemStyle:{-->
+<!--                normal:{-->
+<!--                    color:"red",-->
+<!--                    lineStyle:{color:'red'}-->
+<!--                }-->
+<!--            },-->
+<!--            data: []-->
+<!--        }]-->
+<!--    });-->
+
+<!--    myChart.showLoading();-->
+
+<!--    var names=[];    //类别数组（实际用来盛放X轴坐标值）-->
+<!--    var nums=[];    //销量数组（实际用来盛放Y坐标值）-->
+
+<!--    $.ajax({-->
+<!--        type : "get",-->
+<!--        async : false,            //异步请求（同步请求将会锁住浏览器，用户其他操作必须等待请求完成才可以执行）-->
+<!--        url : "getQiyeByNum/0",    //请求发送到TestServlet处-->
+<!--        data : {},-->
+<!--        dataType : "json",        //返回数据形式为json-->
+<!--        success : function(result) {-->
+<!--            //请求成功时执行该函数内容，result即为服务器返回的json对象-->
+<!--            var data = result.data;-->
+<!--            if (data) {-->
+<!--                for(var i=0;i<data.sb.length;i++){-->
+<!--                    names.push(i);    //挨个取出类别并填入类别数组-->
+<!--                }-->
+<!--                nums=data.sb;-->
+<!--                myChart.hideLoading();    //隐藏加载动画-->
+<!--                myChart.setOption({        //加载数据图表-->
+<!--                    xAxis: {-->
+<!--                        data: names-->
+<!--                    },-->
+<!--                    series: [{-->
+<!--                        // 根据名字对应到相应的系列-->
+<!--                        name: '社保缴纳',-->
+<!--                        data: nums-->
+<!--                    }]-->
+<!--                });-->
+
+<!--            }-->
+
+<!--        },-->
+<!--        error : function() {-->
+<!--            //请求失败时执行该函数-->
+<!--            alert("图表请求数据失败!");-->
+<!--            myChart.hideLoading();-->
+<!--        }-->
+<!--    })-->
+<!--</script>-->
+<!--<script type="text/javascript">-->
+<!--    // 基于准备好的dom，初始化echarts实例-->
+<!--    var myChart = echarts.init(document.getElementById('map5'));-->
+
+<!--    // 指定图表的配置项和数据-->
+<!--    myChart.setOption({-->
+<!--        title: {-->
+<!--            text: '公积金缴纳'-->
+<!--        },-->
+<!--        tooltip: {},-->
+<!--        legend: {-->
+<!--            data:['公积金缴纳']-->
+<!--        },-->
+<!--        xAxis: {-->
+<!--            data: []-->
+<!--        },-->
+<!--        yAxis: {},-->
+<!--        series: [{-->
+<!--            name: '公积金缴纳',-->
+<!--            type: 'bar',-->
+<!--            itemStyle:{-->
+<!--                normal:{-->
+<!--                    color:"red",-->
+<!--                    lineStyle:{color:'red'}-->
+<!--                }-->
+<!--            },-->
+<!--            data: []-->
+<!--        }]-->
+<!--    });-->
+
+<!--    myChart.showLoading();-->
+
+<!--    var names=[];    //类别数组（实际用来盛放X轴坐标值）-->
+<!--    var nums=[];    //销量数组（实际用来盛放Y坐标值）-->
+
+<!--    $.ajax({-->
+<!--        type : "get",-->
+<!--        async : false,            //异步请求（同步请求将会锁住浏览器，用户其他操作必须等待请求完成才可以执行）-->
+<!--        url : "getQiyeByNum/0",    //请求发送到TestServlet处-->
+<!--        data : {},-->
+<!--        dataType : "json",        //返回数据形式为json-->
+<!--        success : function(result) {-->
+<!--            //请求成功时执行该函数内容，result即为服务器返回的json对象-->
+<!--            var data = result.data;-->
+<!--            if (data) {-->
+<!--                for(var i=0;i<data.gjj.length;i++){-->
+<!--                    names.push(i);    //挨个取出类别并填入类别数组-->
+<!--                }-->
+<!--                nums=data.gjj;-->
+<!--                myChart.hideLoading();    //隐藏加载动画-->
+<!--                myChart.setOption({        //加载数据图表-->
+<!--                    xAxis: {-->
+<!--                        data: names-->
+<!--                    },-->
+<!--                    series: [{-->
+<!--                        // 根据名字对应到相应的系列-->
+<!--                        name: '公积金缴纳',-->
+<!--                        data: nums-->
+<!--                    }]-->
+<!--                });-->
+
+<!--            }-->
+
+<!--        },-->
+<!--        error : function() {-->
+<!--            //请求失败时执行该函数-->
+<!--            alert("图表请求数据失败!");-->
+<!--            myChart.hideLoading();-->
+<!--        }-->
+<!--    })-->
+<!--</script>-->
+<script>
+    var typeSelect = document.querySelector("#type");
+    var numSelect = document.querySelector("#num");
+    //构建数组
+    var typeArr = ["企业","个人"];
+    var numArr = [[],[]];
+    var typeIdenx = 0;
+    for (let i = 0; i < 267; i++) {
+        numArr[0].push(i)
+    }
+    for (let i = 0; i < 900; i++) {
+        numArr[1].push(i)
+    }
+
+    //页面加载的时候根据类型数据源添加类型option
+    for(var i=0;i<typeArr.length;i++){
+        var typeOption  = new Option([typeArr[i]]);
+        typeSelect.options.add(typeOption);
+    }
+
+    //当类型做出change的时候出发change事件
+    typeSelect.onchange = function(eve){
+        typeIdenx = eve.target.selectedIndex-1;
+        if(typeIdenx == -1){
+            numSelect.options.length = 0;
+            return;
+        }else{
+            numSelect.options.length = 0;
+            for(var j=0;j<numArr[typeIdenx].length;j++){
+                var numOption = new Option(numArr[typeIdenx][j]);
+                numSelect.options.add(numOption);
+            }
+        }
+    }
+    
+</script>
+</body>
+</html>

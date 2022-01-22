@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge, chrome=1"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>信誉展示平台</title>
+<!--    <link href="/css/bootstrap.min.css" rel="stylesheet">-->
+<!--    <link href="/css/bootstrap-theme.min.css" rel="stylesheet">-->
+<!--    <link href="/css/toastr.min.css" rel="stylesheet">-->
+<!--    <link href="/css/bootstrap-table.min.css" rel="stylesheet">-->
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="/css/vue.css">
+</head>
+<style>
+
+
+</style>
+<body>
+<aside class="sidebar">
+    <h1 style="font-size: 25px;"><a href="/">信誉展示平台</a></h1>
+    <div class="sidebar-nav">
+        <ul><li><a href="javascript:openUrl('/detail.html')"><p style="background-color: #d3200f">个人企业详情</p></a></li></ul>
+        <ul>
+            <li><p style="background-color: #09ad2f">企业</p>
+                <ul class="sub-menu">
+                    <li class="active"><a href="javascript:openUrl('/1.html')">不动产数量</a></li>
+                    <li><a href="javascript:openUrl('/2.html')">公积金总数</a></li>
+                    <li><a href="javascript:openUrl('/3.html')">公积金平均数</a></li>
+                    <li><a href="javascript:openUrl('/4.html')">社保总额</a></li>
+                    <li><a href="javascript:openUrl('/5.html')">社保平均数</a></li>
+                    <li><a href="javascript:openUrl('/6.html')">医保总额</a></li>
+                    <li><a href="javascript:openUrl('/7.html')">医保平均数</a></li>
+                    <li><a href="javascript:openUrl('/8.html')">还款意愿</a></li>
+                    <li><a href="javascript:openUrl('/9.html')">还款能力</a></li>
+                    <li><a href="javascript:openUrl('/10.html')">违约率</a></li>
+                    <li><a href="javascript:openUrl('/11.html')">信用分数</a></li>
+<!--                    <li><a href="javascript:openUrl('/12.html')">信用等级</a></li>-->
+                    <li><a href="javascript:openUrl('/13.html')">授信率</a></li>
+                    <li><a href="javascript:openUrl('/14.html')">信贷额度</a></li>
+                    <li><a href="javascript:openUrl('/15.html')">抵押物品价值</a></li>
+                    <li><a href="javascript:openUrl('/16.html')">抵押贷额度</a></li>
+                </ul>
+            </li>
+        </ul>
+
+        <ul>
+            <li><p style="background-color: #d90d91">个人</p>
+                <ul class="sub-menu">
+                    <li><a href="javascript:openUrl('/01.html')">不动产数量</a></li>
+                    <li><a href="javascript:openUrl('/02.html')">公积金总数</a></li>
+                    <li><a href="javascript:openUrl('/03.html')">公积金平均数</a></li>
+                    <li><a href="javascript:openUrl('/04.html')">社保总额</a></li>
+                    <li><a href="javascript:openUrl('/05.html')">社保平均数</a></li>
+                    <li><a href="javascript:openUrl('/06.html')">医保总额</a></li>
+                    <li><a href="javascript:openUrl('/07.html')">医保平均数</a></li>
+                    <li><a href="javascript:openUrl('/08.html')">还款意愿</a></li>
+                    <li><a href="javascript:openUrl('/09.html')">还款能力</a></li>
+                    <li><a href="javascript:openUrl('/010.html')">违约率</a></li>
+                    <li><a href="javascript:openUrl('/011.html')">信用分数</a></li>
+<!--                    <li><a href="javascript:openUrl('/012.html')">信用等级</a></li>-->
+                    <li><a href="javascript:openUrl('/013.html')">授信率</a></li>
+                    <li><a href="javascript:openUrl('/014.html')">信贷额度</a></li>
+                    <li><a href="javascript:openUrl('/015.html')">抵押物品价值</a></li>
+                    <li><a href="javascript:openUrl('/016.html')">抵押贷额度</a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</aside>
+
+<section class="content">
+    <iframe src="/1.html" id="mainIframe" style="height: 100%;width: 100%;" frameborder="false">
+
+
+    </iframe>
+
+</section>
+<script type="text/javascript">
+    function openUrl(url){
+        $('#mainIframe').attr('src',url);
+    }
+    $(document).ready(function () {
+        $('.sub-menu > li ').on('click', function () {
+            $('.sub-menu > li ').removeClass('active');
+            $(this).addClass('active');
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>详情页</title>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/echarts.min.js"></script>
+    <style>
+        table {
+            border-collapse: collapse;
+            margin: 100px auto;
+        }
+
+        td {
+            width: 160px;
+            height: 20px;
+            border: 1px solid #ddd;
+            padding: 6px 8px;
+        }
+
+        .a1 {
+            background: #878787;
+            color: #fff;
+            font-weight: bolder;
+        }
+
+        tr:hover {
+            background: #71c671;
+            color: #404040;
+            /*font-weight: bolder;*/
+        }
+
+        td {
+            text-align: center;
+        }
+
+        select {
+            width: 200px;
+            height: 30px;
+        }
+    </style>
+</head>
+<body>
+<div id="fm">
+    类型：
+    <select id="type">
+        <option>请选择</option>
+    </select>
+    序号：
+    <select id="num">
+        <option></option>
+    </select>
+    <button id="bt" class="bt" onclick="show()">确定</button>
+    <input type="text" id="hiddenText" value="" style="visibility: hidden">
+</div>
+<div>
+    <table border="1" class="table" id="tb1" style="text-align: center;">
+
+    </table>
+</div>
+
+
+<!--select-->
+<script type="text/javascript">
+    var typeSelect = document.querySelector("#type");
+    var numSelect = document.querySelector("#num");
+    //构建数组
+    var typeArr = ["qiye", "renyuan"];
+    var numArr = [[], []];
+    var typeIdenx = 0;
+    for (let i = 0; i < 267; i++) {
+        numArr[0].push(i)
+    }
+    for (let i = 0; i < 900; i++) {
+        numArr[1].push(i)
+    }
+
+    //页面加载的时候根据类型数据源添加类型option
+    for (var i = 0; i < typeArr.length; i++) {
+        var typeOption = new Option([typeArr[i]]);
+        typeSelect.options.add(typeOption);
+    }
+
+    //当类型做出change的时候出发change事件
+    typeSelect.onchange = function (eve) {
+        typeIdenx = eve.target.selectedIndex - 1;
+        if (typeIdenx == -1) {
+            numSelect.options.length = 0;
+            return;
+        } else {
+            numSelect.options.length = 0;
+            for (var j = 0; j < numArr[typeIdenx].length; j++) {
+                var numOption = new Option(numArr[typeIdenx][j]);
+                numSelect.options.add(numOption);
+            }
+        }
+    }
+</script>
+<!--表格-->
+<script type="text/javascript">
+   function show() {
+       $.ajax({
+           type: "get",
+           async: false,
+           url: submitData(),    //改成submitData只能返回默认值,无法同步更新
+           data: {},
+           dataType: "json",        //返回数据形式为json
+           success: function (result) {
+               //请求成功时执行该函数内容，result即为服务器返回的json对象
+               var data = result.data;
+               if (data) {
+                   var s = "";
+                   s = s + " <div>\n" +
+                       "            <tr class=\"a1\">\n" +
+                       "                <td>名称</td>\n" +
+                       "                <td>" + data.name + "</td>\n" +
+                       "                <td>不动产数量</td>\n" +
+                       "                <td>" + data.home_number + "</td>\n" +"        </div>\n" ;
+                   $('#tb1').html(s)
+               }
+           }
+       })
+
+   }
+
+</script>
+<script type="text/javascript">
+    function submitData() {
+        // alert("确定")
+        var type1 = document.getElementById("type").value;
+        var num = document.getElementById("num").value;
+        if (type == "") {
+            alert("类型不能为空");
+            // return "qiye/0";
+        }
+        if (num == "") {
+            alert("序号不能为空")
+            // return "qiye/0";
+        }
+        // alert(type1 + "/" + num)
+       return type1 + "/" + num;
+    }
+</script>
+</body>
+</html>
